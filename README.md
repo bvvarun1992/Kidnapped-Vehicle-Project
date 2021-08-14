@@ -21,7 +21,7 @@ This project uses a particle filter to localize a kidnapped car within a 2D spar
 
 This repository includes two files that can be used to set up and install uWebSocketIO for either Linux or Mac systems.
 ```
-install--mac.sh
+install-mac.sh
 install-ubuntu.sh
 ```
 Once the install for uWebSocketIO is complete, the main program can be built and run by running scripts below from top directory
