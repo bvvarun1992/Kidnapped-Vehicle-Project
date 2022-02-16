@@ -13,33 +13,39 @@ using std::vector;
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
 // else the empty string "" will be returned.
-string hasData(string s) {
+string hasData(string s)
+{
   auto found_null = s.find("null");
   auto b1 = s.find_first_of("[");
   auto b2 = s.find_first_of("]");
-  if (found_null != string::npos) {
+  if (found_null != string::npos)
+  {
     return "";
-  } else if (b1 != string::npos && b2 != string::npos) {
+  }
+  else if (b1 != string::npos && b2 != string::npos)
+  {
     return s.substr(b1, b2 - b1 + 1);
   }
   return "";
 }
 
-int main() {
+int main()
+{
   uWS::Hub h;
 
   // Set up parameters here
-  double delta_t = 0.1;  // Time elapsed between measurements [sec]
-  double sensor_range = 50;  // Sensor range [m]
+  double delta_t = 0.1;     // Time elapsed between measurements [sec]
+  double sensor_range = 50; // Sensor range [m]
 
   // GPS measurement uncertainty [x [m], y [m], theta [rad]]
-  double sigma_pos [3] = {0.3, 0.3, 0.01};
+  double sigma_pos[3] = {0.3, 0.3, 0.01};
   // Landmark measurement uncertainty [x [m], y [m]]
-  double sigma_landmark [2] = {0.3, 0.3};
+  double sigma_landmark[2] = {0.3, 0.3};
 
   // Read map data
   Map map;
-  if (!read_map_data("../data/map_data.txt", map)) {
+  if (!read_map_data("../data/map_data.txt", map))
+  {
     std::cout << "Error: Could not open map file" << std::endl;
     return -1;
   }
@@ -47,9 +53,9 @@ int main() {
   // Create particle filter
   ParticleFilter pf;
 
-  h.onMessage([&pf,&map,&delta_t,&sensor_range,&sigma_pos,&sigma_landmark]
-              (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
-               uWS::OpCode opCode) {
+  h.onMessage([&pf, &map, &delta_t, &sensor_range, &sigma_pos, &sigma_landmark](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+                                                                                uWS::OpCode opCode)
+              {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -127,8 +133,8 @@ int main() {
             weight_sum += particles[i].weight;
           }
 
-          std::cout << "highest w " << highest_weight << std::endl;
-          std::cout << "average w " << weight_sum/num_particles << std::endl;
+          // std::cout << "highest w " << highest_weight << std::endl;
+          // std::cout << "average w " << weight_sum/num_particles << std::endl;
 
           json msgJson;
           msgJson["best_particle_x"] = best_particle.x;
@@ -149,26 +155,27 @@ int main() {
         string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
-    }  // end websocket message if
-  }); // end h.onMessage
+    }  // end websocket message if }); // end h.onMessage
 
-  h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
-    std::cout << "Connected!!!" << std::endl;
-  });
+  h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req)
+                 { std::cout << "Connected!!!" << std::endl; });
 
-  h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code, 
-                         char *message, size_t length) {
+  h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code,
+                         char *message, size_t length)
+                    {
     ws.close();
-    std::cout << "Disconnected" << std::endl;
-  });
+    std::cout << "Disconnected" << std::endl; });
 
   int port = 4567;
-  if (h.listen(port)) {
+  if (h.listen(port))
+  {
     std::cout << "Listening to port " << port << std::endl;
-  } else {
+  }
+  else
+  {
     std::cerr << "Failed to listen to port" << std::endl;
     return -1;
   }
-  
+
   h.run();
 }
